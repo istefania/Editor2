@@ -1,0 +1,2 @@
+rootProject.name='Editor2'
+include ':app'

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Editor2</string>
+    <string name="drawerOpen">Open drawer</string>
+    <string name="drawerClosed">Close drawer</string>
+</resources>
