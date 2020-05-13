@@ -21,25 +21,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/toolbar" />
 
-        <TextView
-            android:id="@+id/textView_contrast"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0%" />
-
-        <ProgressBar
-            android:id="@+id/progressBar_contrast"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="350dp"
-            android:layout_height="20dp"
-            android:layout_above="@+id/seekBar_contrast" />
-
-        <SeekBar
-
-            android:id="@+id/seekBar_contrast"
-            android:layout_width="350dp"
-            android:layout_height="10dp"
-            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/image_view"
@@ -65,6 +46,66 @@
         android:layout_gravity="start"
         app:menu="@menu/draw_menu"
         app:headerLayout="@layout/header">
+
+        <SeekBar
+            android:id="@+id/seekBar_contrast"
+            android:layout_width="220dp"
+            android:layout_height="10dp"
+            android:layout_marginTop="44dp"
+            android:layout_marginLeft="90dp"/>
+
+        <TextView
+            android:id="@+id/textView_contrast"
+            android:layout_marginTop="42dp"
+            android:layout_marginLeft="300dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0%" />
+
+
+        <SeekBar
+            android:id="@+id/seekBar_brightness"
+            android:layout_width="220dp"
+            android:layout_height="10dp"
+            android:layout_marginTop="91dp"
+            android:layout_marginLeft="90dp"/>
+
+        <TextView
+            android:id="@+id/textView_brightness"
+            android:layout_marginTop="89dp"
+            android:layout_marginLeft="300dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0%" />
+
+
+        <SeekBar
+            android:id="@+id/seekBar_saturation"
+            android:layout_width="220dp"
+            android:layout_height="10dp"
+            android:layout_marginTop="148dp"
+            android:layout_marginLeft="90dp"/>
+
+        <TextView
+            android:id="@+id/textView_saturation"
+            android:layout_marginTop="146dp"
+            android:layout_marginLeft="300dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0%" />
+
+        <Button
+            android:id="@+id/apply_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Apply"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:layout_marginTop="500dp"
+            android:layout_gravity="center_horizontal"
+            />
+
+
+
 
     </com.google.android.material.navigation.NavigationView>
 
