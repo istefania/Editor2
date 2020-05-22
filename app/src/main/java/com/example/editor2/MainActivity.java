@@ -18,8 +18,8 @@ import android.provider.Telephony;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +27,8 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -35,6 +37,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     Bitmap bitmap;
 
+    private ExpandableListView listView;
+    private ExpandableListAdapter listAdapter;
+    private List<String> listDataHeader;
+    private HashMap<String,List<String>> listHash;
+
+
+    
     private TextView textViewContrast;
     private SeekBar seekBarContrast;
     private TextView textViewBrightness;
@@ -46,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     ActionBarDrawerToggle toggle;
     Button apply;
+
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -79,6 +89,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        listView = (ExpandableListView)findViewById(R.id.expandable_list);
+        //initData();
+        listAdapter= new ExpandableListAdapter(this,listDataHeader,listHash);
+
+
         seekBarContrast.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -105,6 +120,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 seekBarBrightness.setProgress(progress);
                 textViewBrightness.setText(""+progress+"%");
+                SetContrast(bitmap, progress);
+                ImageView imageView = findViewById(R.id.image_view);
+                imageView.setImageBitmap(bitmap);
+
 
             }
 
@@ -176,6 +195,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
 
+    }
+
+    private void initData() {
     }
 
     private void chooseImage() {
