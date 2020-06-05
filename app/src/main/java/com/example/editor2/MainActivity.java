@@ -11,8 +11,10 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Telephony;
 import android.view.MenuItem;
@@ -26,7 +28,11 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private HashMap<String,List<String>> listHash;
 
 
-    
+
     private TextView textViewContrast;
     private SeekBar seekBarContrast;
     private TextView textViewBrightness;
@@ -65,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         imageView = (ImageView) findViewById(R.id.image_view);
 
         Button selectImage = findViewById(R.id.choose_image_btn);
+        Button saveImage=findViewById(R.id.save_image_btn);
         apply=(Button)findViewById(R.id.apply_button);
 
         textViewContrast=(TextView)findViewById(R.id.textView_contrast);
@@ -90,8 +97,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         listView = (ExpandableListView)findViewById(R.id.expandable_list);
-        //initData();
+        initData();
         listAdapter= new ExpandableListAdapter(this,listDataHeader,listHash);
+        listView.setAdapter(listAdapter);
 
 
         seekBarContrast.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -159,6 +167,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         });
 
+        saveImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FileOutputStream outStream = null;
+                File sdCard = Environment.getExternalStorageDirectory();
+                File dir = new File(sdCard.getAbsolutePath() + "/Camera");
+                dir.mkdirs();
+                String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                File outFile = new File(dir, fileName);
+                try {
+                    outStream = new FileOutputStream(outFile);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                try {
+                    outStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    outStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(MainActivity.this, "salvaram poza", Toast.LENGTH_SHORT).show();
+            }
+
+
+        });
 
 
         selectImage.setOnClickListener(new View.OnClickListener() {
@@ -198,7 +236,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initData() {
+        listDataHeader = new ArrayList<>();
+        listHash = new HashMap<>();
+
+        listDataHeader.add("Rotate");
+        listDataHeader.add("Flip");
+
+        List<String> flip = new ArrayList<>();
+        flip.add("Horizontally");
+        flip.add("Vertically");
+
+        List<String> rotate= new ArrayList<>();
+        rotate.add("Left");
+        rotate.add("Right");
+
+        listHash.put(listDataHeader.get(0),flip);
+        listHash.put(listDataHeader.get(1),rotate);
+
     }
+
 
     private void chooseImage() {
         Intent intent = new Intent();
@@ -231,11 +287,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()){
-            case R.id.flip:
-                break;
+            //case R.id.flip:
 
-            case R.id.rotate:
-                break;
+            //case R.id.rotate:
         }
 
         return true;
@@ -372,6 +426,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Bitmap bmOut = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bmOut.setPixels(pixels, 0, width, 0, 0, width, height);
         return bmOut;
+    }
+
+    public Bitmap RotateImage(Bitmap src, float degree) {
+        // create new matrix object
+        Matrix matrix = new Matrix();
+        // setup rotation degree
+        matrix.postRotate(degree);
+        // return new bitmap rotated using matrix
+        return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
     }
 
 }
