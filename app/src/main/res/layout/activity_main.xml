@@ -9,6 +9,8 @@
     tools:context=".MainActivity">
 
 
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -48,7 +50,19 @@
                 android:text="Choose Image" />
 
 
+
         </LinearLayout>
+
+
+
+        <Button
+            android:id="@+id/crop_button"
+            style="@style/Base.Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="450dp"
+            android:text="Crop" />
 
 
     </LinearLayout>
@@ -57,7 +71,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/navigation_drawer"
-        android:layout_gravity="start"
+        android:layout_gravity="start
+"
         app:menu="@menu/draw_menu"
         app:headerLayout="@layout/header">
 
@@ -66,6 +81,7 @@
             android:layout_width="220dp"
             android:layout_height="10dp"
             android:layout_marginTop="44dp"
+            android:max="255"
             android:layout_marginLeft="90dp"/>
 
         <TextView
@@ -82,6 +98,7 @@
             android:layout_width="220dp"
             android:layout_height="10dp"
             android:layout_marginTop="91dp"
+            android:max="255"
             android:layout_marginLeft="90dp"/>
 
         <TextView
@@ -108,6 +125,23 @@
             android:layout_height="wrap_content"
             android:text="0%" />
 
+        <SeekBar
+            android:id="@+id/seekBar_transparency"
+            android:layout_width="220dp"
+            android:layout_height="10dp"
+            android:layout_marginTop="195dp"
+            android:layout_marginLeft="90dp"
+            android:max="255"
+            android:progress="255"/>
+
+        <TextView
+            android:id="@+id/textView_transparency"
+            android:layout_marginTop="192dp"
+            android:layout_marginLeft="300dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100%" />
+
         <Button
             android:id="@+id/apply_button"
             android:layout_width="wrap_content"
@@ -117,6 +151,7 @@
             android:layout_marginTop="500dp"
             android:layout_gravity="center_horizontal"
             />
+
 
         <ExpandableListView
             android:id="@+id/expandable_list"
