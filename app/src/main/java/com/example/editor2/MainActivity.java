@@ -1,10 +1,13 @@
 package com.example.editor2;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,7 +15,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -25,12 +27,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private ExpandableListView listView;
     private ExpandableListAdapter listAdapter;
     private List<String> listDataHeader;
-    private HashMap<String,List<String>> listHash;
+    private HashMap<String, List<String>> listHash;
 
 
     private TextView textViewContrast;
@@ -64,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     Button apply;
 
 
-
     @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,45 +78,74 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         final Button saveImage = findViewById(R.id.save_image_btn);
         apply = (Button) findViewById(R.id.apply_button);
 
-        textViewContrast=(TextView)findViewById(R.id.textView_contrast);
-        seekBarContrast=(SeekBar)findViewById(R.id.seekBar_contrast);
+        textViewContrast = (TextView) findViewById(R.id.textView_contrast);
+        seekBarContrast = (SeekBar) findViewById(R.id.seekBar_contrast);
 
-        textViewBrightness=(TextView)findViewById(R.id.textView_brightness);
-        seekBarBrightness=(SeekBar)findViewById(R.id.seekBar_brightness);
+        textViewBrightness = (TextView) findViewById(R.id.textView_brightness);
+        seekBarBrightness = (SeekBar) findViewById(R.id.seekBar_brightness);
 
-        textViewSaturation=(TextView)findViewById(R.id.textView_saturation);
-        seekBarSaturation=(SeekBar)findViewById(R.id.seekBar_saturation);
+        textViewSaturation = (TextView) findViewById(R.id.textView_saturation);
+        seekBarSaturation = (SeekBar) findViewById(R.id.seekBar_saturation);
 
 
-        drawerLayout=findViewById(R.id.drawer);
-        toolbar=findViewById(R.id.toolbar);
+        drawerLayout = findViewById(R.id.drawer);
+        toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        toggle=new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.drawerOpen,R.string.drawerClosed);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawerOpen, R.string.drawerClosed);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         //get the listview
-        listView = (ExpandableListView)findViewById(R.id.expandable_list);
+        listView = (ExpandableListView) findViewById(R.id.expandable_list);
 
         //preparing list data
         initData();
-        listAdapter= new ExpandableListAdapter(this,listDataHeader,listHash);
+        listAdapter = new ExpandableListAdapter(this, listDataHeader, listHash);
 
         //setting list adapter
         listView.setAdapter(listAdapter);
 
-        bottomNavigationView=(BottomNavigationView)findViewById(R.id.bottom_menu_id);
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_menu_id);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        1);
+
+            }
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        1);
+
+            }
+        }
 
 
         seekBarContrast.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 seekBarContrast.setProgress(progress);
-                textViewContrast.setText(""+(progress*100)/255+"%");
+                textViewContrast.setText("" + (progress * 100) / 255 + "%");
 
             }
 
@@ -134,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 seekBarBrightness.setProgress(progress);
-                textViewBrightness.setText(""+(progress*100)/255+"%");
+                textViewBrightness.setText("" + (progress * 100) / 255 + "%");
                 SetContrast(bitmap, progress);
                 ImageView imageView = findViewById(R.id.image_view);
                 imageView.setImageBitmap(bitmap);
@@ -158,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 seekBarSaturation.setProgress(progress);
-                textViewSaturation.setText(""+progress+"%");
+                textViewSaturation.setText("" + progress + "%");
 
             }
 
@@ -175,33 +207,48 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         });
 
 
-       /* saveImage.setOnClickListener(new View.OnClickListener() {
+        saveImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (imageView.getDrawable() == null) {
-
                     Toast.makeText(MainActivity.this, "Pick a photo", Toast.LENGTH_SHORT).show();
-
                 } else {
-                    imageView.setDrawingCacheEnabled(true);
-                    Bitmap bmap = imageView.getDrawingCache();
-                    saveImage(bmap,"000");
 
+                    BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
+                    Bitmap bitmap = draw.getBitmap();
 
-                    Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                    FileOutputStream outStream = null;
+                    File sdCard = Environment.getExternalStorageDirectory();
+                    File dir = new File(sdCard.getAbsolutePath() + "/YourFolderName");
+                    dir.mkdirs();
+                    String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                    File outFile = new File(dir, fileName);
+                    try {
+                        outStream = new FileOutputStream(outFile);
+
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                        outStream.flush();
+                        outStream.close();
+                        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        intent.setData(Uri.fromFile(outFile));
+                        sendBroadcast(intent);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }
-    }
 
-        });*/
-
+            }
+        });
 
 
         apply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(bitmap!=null) {
+                if (bitmap != null) {
 
                     int contrast_value = seekBarContrast.getProgress();
                     int brightness_value = seekBarBrightness.getProgress();
@@ -212,8 +259,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     ImageView imageView = findViewById(R.id.image_view);*/
                     imageView.setImageBitmap(bitmap1);
                     drawerLayout.closeDrawers();
-                }
-                else{
+                } else {
 
                     Toast.makeText(getApplicationContext(), "Choose Image!",
                             Toast.LENGTH_LONG).show();
@@ -227,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private void initData() {
         listDataHeader = new ArrayList<>();
-        listHash = new HashMap<String,List<String>>();
+        listHash = new HashMap<String, List<String>>();
 
         listDataHeader.add("Rotate");
         listDataHeader.add("Flip");
@@ -236,13 +282,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         flip.add("Horizontally");
         flip.add("Vertically");
 
-        List<String> rotate= new ArrayList<>();
+        List<String> rotate = new ArrayList<>();
         rotate.add("Left");
         rotate.add("Right");
 
 
-        listHash.put(listDataHeader.get(0),flip);
-        listHash.put(listDataHeader.get(1),rotate);
+        listHash.put(listDataHeader.get(0), flip);
+        listHash.put(listDataHeader.get(1), rotate);
 
     }
 
@@ -263,15 +309,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             Uri uri = data.getData();
 
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                    ImageView imageView = findViewById(R.id.image_view);
-                    imageView.setImageBitmap(bitmap);
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                ImageView imageView = findViewById(R.id.image_view);
+                imageView.setImageBitmap(bitmap);
 
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -326,6 +372,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // return final image
         return bmOut;
     }
+
     public Bitmap SetBrightness(Bitmap src, int value) {
 
         // original image size
@@ -377,6 +424,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // return final image
         return bmOut;
     }
+
     @SuppressLint("Range")
     public Bitmap SetSaturation(Bitmap source, int level) {
         // get original image size
@@ -423,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root);
         myDir.mkdirs();
-        String fname = "Image-" + image_name+ ".jpg";
+        String fname = "Image-" + image_name + ".jpg";
         File file = new File(myDir, fname);
         if (file.exists()) file.delete();
         Log.i("LOAD", root + fname);
@@ -440,20 +488,37 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.choose_photo_id:
                 chooseImage();
                 break;
             case R.id.save_photo_id:
                 if (imageView.getDrawable() == null) {
-
                     Toast.makeText(MainActivity.this, "Pick a photo", Toast.LENGTH_SHORT).show();
-
                 } else {
-                    imageView.setDrawingCacheEnabled(true);
-                    Bitmap bmap = imageView.getDrawingCache();
-                    saveImage(bmap,"000");
-                    Toast.makeText(MainActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                    BitmapDrawable draw = (BitmapDrawable) imageView.getDrawable();
+                    Bitmap bitmap = draw.getBitmap();
+
+                    FileOutputStream outStream = null;
+                    File sdCard = Environment.getExternalStorageDirectory();
+                    File dir = new File(sdCard.getAbsolutePath() + "/YourFolderName");
+                    dir.mkdirs();
+                    String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                    File outFile = new File(dir, fileName);
+                    try {
+                        outStream = new FileOutputStream(outFile);
+
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+                        outStream.flush();
+                        outStream.close();
+                        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                        intent.setData(Uri.fromFile(outFile));
+                        sendBroadcast(intent);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case R.id.undo_id:

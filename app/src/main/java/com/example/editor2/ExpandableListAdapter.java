@@ -17,12 +17,12 @@ import java.util.List;
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
     private List<String> listDataHeader;
-    private HashMap<String,List<String>> listHashMap;
+    private HashMap<String, List<String>> listHashMap;
 
-    public ExpandableListAdapter(Context context, List<String> listDataHeader,HashMap<String,List<String>> listHashMap) {
+    public ExpandableListAdapter(Context context, List<String> listDataHeader, HashMap<String, List<String>> listHashMap) {
         this.context = context;
-        this.listDataHeader=listDataHeader;
-        this.listHashMap=listHashMap;
+        this.listDataHeader = listDataHeader;
+        this.listHashMap = listHashMap;
     }
 
     @Override
@@ -58,15 +58,21 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View view, ViewGroup viewGroup) {
-        String headerTitle = (String)getGroup(groupPosition);
-        if( view== null){
+        String headerTitle = "";
+        if (groupPosition == 0) {
+            headerTitle = "Flip";
+        } else {
+            headerTitle = "Rotate";
+        }
 
-            LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view=inflater.inflate(R.layout.list_group,null);
+        if (view == null) {
+
+            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.list_group, null);
 
         }
 
-        TextView ListHeader = (TextView)view.findViewById(R.id.ListHeader);
+        TextView ListHeader = (TextView) view.findViewById(R.id.ListHeader);
         ListHeader.setTypeface(null, Typeface.BOLD);
         ListHeader.setText(headerTitle);
         return view;
@@ -74,16 +80,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup viewGroup) {
-       final String childText = (String)getChild(groupPosition, childPosition);
-       if (view == null ) {
-           LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-           view = inflater.inflate(R.layout.list_item, null);
+        final String childText = (String) getChild(groupPosition, childPosition);
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.list_item, null);
 
-       }
+        }
 
-       TextView txtListChild = (TextView) view.findViewById(R.id.ListItem);
-       txtListChild.setText(childText);
-       return view;
+        TextView txtListChild = (TextView) view.findViewById(R.id.ListItem);
+        txtListChild.setText(childText);
+        return view;
     }
 
     private void show() {
