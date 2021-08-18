@@ -3,7 +3,5 @@
 <item android:id="@+id/contrast" android:title="Contrast" />
     <item android:id="@+id/brightness" android:title="Brightness" />
     <item android:id="@+id/saturation" android:title="Saturation"/>
-    <item android:id="@+id/transparency" android:title= "Transparency"/>
-
 
 </menu>

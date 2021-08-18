@@ -18,6 +18,15 @@
         android:title="Undo"
         android:icon="@drawable/undo"
         android:orderInCategory="1"/>
+    <item
+        android:id="@+id/upload_id"
+        android:title="Upload"
+        android:icon="@drawable/ic_cloud_upload_black_24dp"
+        android:orderInCategory="4"
+
+
+
+        />
 
 
 

@@ -1,15 +1,12 @@
 package com.example.editor2;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
-
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +55,13 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View view, ViewGroup viewGroup) {
-        String headerTitle = (String)getGroup(groupPosition);
+        String headerTitle = "";
+        if (groupPosition == 0) {
+            headerTitle = "Flip";
+        } else {
+            headerTitle = "Rotate";
+        }
+
         if( view== null){
 
             LayoutInflater inflater = (LayoutInflater)this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
